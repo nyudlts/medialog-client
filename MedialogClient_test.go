@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 var mlc MedialogClient
@@ -30,5 +33,26 @@ func TestClient(t *testing.T) {
 		}
 
 		t.Log(mlInfo)
+	})
+
+	var entryUUID uuid.UUID
+	t.Run("test get all medialog entry uuids", func(t *testing.T) {
+		entries, err := mlc.GetEntryUUIDs()
+		if err != nil {
+			t.Error(err)
+		}
+		assert.GreaterOrEqual(t, len(entries), 1)
+		entryUUID, err = uuid.Parse(entries[0])
+		if err != nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("test get a medialog entry", func(t *testing.T) {
+		entry, err := mlc.GetEntryUUID(entryUUID)
+		if err != nil {
+			t.Error(err)
+		}
+		t.Logf("%v", entry)
 	})
 }
