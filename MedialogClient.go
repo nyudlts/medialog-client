@@ -1,8 +1,7 @@
-package main
+package medialog
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,16 +11,6 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 	yaml "gopkg.in/yaml.v2"
 )
-
-var (
-	config      string
-	environment string
-)
-
-func init() {
-	flag.StringVar(&config, "config", "", "")
-	flag.StringVar(&environment, "environment", "", "")
-}
 
 type Creds struct {
 	URL      string `yaml:"url"`
@@ -37,19 +26,25 @@ type MedialogClient struct {
 
 const API_ROOT = "/api/v0"
 
-func NewClient(creds Creds, timeout int) (MedialogClient, error) {
+func NewClient(config string, environment string, timeout int) (*MedialogClient, error) {
+
+	mlClient := MedialogClient{}
+	creds, err := getCreds(config, environment)
+	if err != nil {
+		return &mlClient, err
+	}
+
 	tr := &http.Transport{
 		MaxIdleConns:       10,
 		IdleConnTimeout:    time.Duration(timeout) * time.Second,
 		DisableCompression: true,
 	}
 
-	mlClient := MedialogClient{}
 	mlClient.Client = &http.Client{Transport: tr}
 	mlClient.BaseURL = creds.URL + API_ROOT
 	mlClient.getToken(creds)
 
-	return mlClient, nil
+	return &mlClient, nil
 }
 
 func getCreds(config string, environment string) (Creds, error) {
@@ -69,7 +64,7 @@ func getCreds(config string, environment string) (Creds, error) {
 		}
 	}
 
-	return Creds{}, fmt.Errorf("Credentials file did not contain %s\n", environment)
+	return Creds{}, fmt.Errorf("credentials file did not contain %s\n", environment)
 }
 
 func (mlClient *MedialogClient) getToken(creds Creds) {
@@ -91,7 +86,7 @@ func (mlClient *MedialogClient) getToken(creds Creds) {
 	mlClient.Token = token.Token
 }
 
-func (mlc MedialogClient) GetRoot() (models.MedialogInfo, error) {
+func (mlc MedialogClient) GetHostInfo() (models.MedialogInfo, error) {
 	mlInfo := models.MedialogInfo{}
 	req, err := http.NewRequest("GET", mlc.BaseURL, nil)
 	if err != nil {

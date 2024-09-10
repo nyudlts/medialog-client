@@ -1,4 +1,4 @@
-package main
+package medialog
 
 import (
 	"encoding/json"

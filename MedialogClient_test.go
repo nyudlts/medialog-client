@@ -1,4 +1,4 @@
-package main
+package medialog
 
 import (
 	"flag"
@@ -8,18 +8,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var mlc MedialogClient
+var (
+	config      string
+	environment string
+)
+
+func init() {
+	flag.StringVar(&config, "config", "", "")
+	flag.StringVar(&environment, "environment", "", "")
+}
 
 func TestClient(t *testing.T) {
 	flag.Parse()
-
+	var mlc *MedialogClient
 	t.Run("test create client", func(t *testing.T) {
-		creds, err := getCreds(config, environment)
-		if err != nil {
-			t.Error(err)
-		}
 
-		mlc, err = NewClient(creds, 20)
+		var err error
+		mlc, err = NewClient(20)
 		if err != nil {
 			t.Error(err)
 		}
@@ -27,7 +32,7 @@ func TestClient(t *testing.T) {
 
 	t.Run("test get medialog info", func(t *testing.T) {
 
-		mlInfo, err := mlc.GetRoot()
+		mlInfo, err := mlc.GetHostInfo()
 		if err != nil {
 			t.Error(err)
 		}
@@ -53,6 +58,6 @@ func TestClient(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		t.Logf("%v", entry)
+		assert.Greater(t, entry.MediaID, uint(0))
 	})
 }

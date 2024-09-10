@@ -1,0 +1,5 @@
+"local": {
+    "username": "username",
+    "password": "password",
+    "url": "http://localhost:8080"
+}
