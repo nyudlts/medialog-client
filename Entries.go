@@ -61,7 +61,7 @@ func (mlc MedialogClient) GetEntryUUIDs() ([]string, error) {
 
 }
 
-func (mlc MedialogClient) GetEntryUUIDsForResource(resourceID int) ([]string, err) {
+func (mlc MedialogClient) GetEntryUUIDsForResource(resourceID int) ([]string, error) {
 	reqURL := fmt.Sprintf("%s/resources/:%d/entries?all_ids=true", mlc.BaseURL, resourceID)
 	req, err := http.NewRequest("GET", reqURL, nil)
 	if err != nil {
