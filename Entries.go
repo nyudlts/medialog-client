@@ -1,4 +1,4 @@
-package medialog
+package medialog_client
 
 import (
 	"encoding/json"
@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/models"
 )
+
+const XMEDIALOGTOKEN = "X-Medialog-Token"
 
 func (mlc MedialogClient) GetEntryUUID(uuid uuid.UUID) (models.Entry, error) {
 	entry := models.Entry{}
@@ -62,8 +64,10 @@ func (mlc MedialogClient) GetEntryUUIDs() ([]string, error) {
 }
 
 func (mlc MedialogClient) GetEntryUUIDsForResource(resourceID int) ([]string, error) {
-	reqURL := fmt.Sprintf("%s/resources/:%d/entries?all_ids=true", mlc.BaseURL, resourceID)
+
+	reqURL := fmt.Sprintf("%s/resources/%d/entries?all_ids=true", mlc.BaseURL, resourceID)
 	req, err := http.NewRequest("GET", reqURL, nil)
+
 	if err != nil {
 		return []string{}, err
 	}
@@ -71,6 +75,10 @@ func (mlc MedialogClient) GetEntryUUIDsForResource(resourceID int) ([]string, er
 
 	resp, err := mlc.Client.Do(req)
 	if err != nil {
+		return []string{}, err
+	}
+
+	if resp.StatusCode != 200 {
 		return []string{}, err
 	}
 

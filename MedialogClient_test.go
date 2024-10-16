@@ -1,4 +1,4 @@
-package medialog
+package medialog_client
 
 import (
 	"flag"
