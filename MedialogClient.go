@@ -1,4 +1,4 @@
-package medialog_client
+package medialogclient
 
 import (
 	"encoding/json"

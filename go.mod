@@ -1,4 +1,4 @@
-module github.com/nyudlts/medialog_client
+module github.com/nyudlts/medialogclient
 
 go 1.22.3
 
